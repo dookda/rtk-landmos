@@ -1,1 +1,32 @@
+version: '3.3'
+services:
+  postgis:
+    image: postgis/postgis
+    container_name: rtk_postgis
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=geodb
+    ports:
+      - 5433:5432
+    # volumes:
+    #   - ./postgres/geodb.sql:/docker-entrypoint-initdb.d/geodb.sql
+  python:
+    build: ./python_api/
+    ports:
+      - "8000:5000"
+  redis:
+    image: "redis:alpine"
 
+  webapp:
+    container_name: rtk_webapp
+    build: ./webapp/
+    depends_on:
+      - postgis
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./webapp:/usr/src/app
+    ports:
+      - 3000:3000

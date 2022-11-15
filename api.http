@@ -1,0 +1,9 @@
+POST https://rtk-landmos.com:3000/api/getbystation
+content-type: application/json
+
+{
+    "stat_code": "05"
+}
+
+###
+GET https://rtk-landmos.com:3000/api/basestation
