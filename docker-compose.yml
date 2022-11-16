@@ -13,20 +13,36 @@ services:
     # volumes:
     #   - ./postgres/geodb.sql:/docker-entrypoint-initdb.d/geodb.sql
   python:
+    container_name: rtk_pythonapi
     build: ./python_api/
     ports:
       - "8000:5000"
   redis:
     image: "redis:alpine"
 
-  webapp:
+  nodejs:
+    image: node
+    container_name: rtk_nodejs
+    working_dir: /app/nodejs
+    restart: always
+    depends_on:
+      - postgis
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./nodejs:/app/nodejs
+    ports:
+      - 3000:3000
+    command: bash -c "npm i && npm i -g nodemon && npm i -g pm2 && nodemon server.js"
+
+  react:
     container_name: rtk_webapp
-    build: ./webapp/
+    build: ./react/
     depends_on:
       - postgis
     environment:
       - NODE_ENV=development
     volumes:
-      - ./webapp:/usr/src/app
+      - ./react:/usr/src/app
     ports:
-      - 3000:3000
+      - 3500:3000

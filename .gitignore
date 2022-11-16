@@ -1,4 +1,6 @@
 .nodemodule/
+db.js
+config.json
 
 # Logs
 logs
