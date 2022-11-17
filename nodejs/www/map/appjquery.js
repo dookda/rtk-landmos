@@ -219,7 +219,7 @@ let loadData = async (stat_code) => {
                 dn.push(Number(i.dn));
                 dh.push(Number(i.dh));
             });
-            console.log(de, dn);
+            // console.log(de, dn);
 
             await showChart(stat_code, "de", cat, de, 'E-Diff (&larr; W- , +E &rarr;)');
             await showChart(stat_code, "dn", cat, dn, ' N-Diff (&darr; S- , +N  &uarr;)');
