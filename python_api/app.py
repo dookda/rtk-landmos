@@ -1,10 +1,13 @@
 import time
-
 import redis
 from flask import Flask
+from auth import pg
 
 app = Flask(__name__)
 cache = redis.Redis(host='redis', port=6379)
+
+pg.autocommit = True
+cursor = pg.cursor()
 
 
 def get_hit_count():

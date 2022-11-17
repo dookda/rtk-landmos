@@ -1,2 +1,5 @@
 flask
 redis
+psycopg2
+numpy
+requests

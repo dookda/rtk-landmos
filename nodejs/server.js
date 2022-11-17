@@ -33,7 +33,7 @@ app.use('/', express.static('www'))
 //     console.log('listening on port ' + server.address().port);
 // });
 
-const port = 3000
+const port = 3500
 app.listen(port, () => {
     console.log(`http://localhost:${port}`)
 })
