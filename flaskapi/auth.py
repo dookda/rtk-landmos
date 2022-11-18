@@ -1,10 +1,10 @@
 import psycopg2 as pg2
 
 conn = {
-    "dbName": "geodb",
+    "dbName": "GNSS",
     "dbUser": "postgres",
-    "dbPass": "1234",
-    "dbHost": "pymodis_postgis",
+    "dbPass": "RTKLANDMOS1234",
+    "dbHost": "150.95.91.243",
     "dbPort": "5432",
 }
 
