@@ -7,11 +7,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1234
-      - POSTGRES_DB=geodb
+      - POSTGRES_DB=gnss
     ports:
       - 5433:5432
-    # volumes:
-    #   - ./postgres/geodb.sql:/docker-entrypoint-initdb.d/geodb.sql
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
   flask:
     container_name: rtk_flask
     build: ./flaskapi

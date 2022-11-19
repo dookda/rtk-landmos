@@ -10,7 +10,7 @@ GET https://rtk-landmos.com:3000/api/basestation
 
 
 ### 
-GET http://localhost:8000/get_data
+GET http://localhost:3100/get_data
 
 ### 
-GET http://localhost:8000/
+GET http://localhost:3100/hello
