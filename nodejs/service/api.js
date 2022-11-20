@@ -4,14 +4,19 @@ const express = require('express');
 const app = express.Router();
 const db = require("./db").db;
 
+
+app.get("/api/test", (req, res) => {
+    res.status(200).json({ data: "ok" })
+})
+
 app.post("/api/selectdata", (req, res) => {
     const { stat_code, start_date, end_date } = req.body;
     //const stat_code='10'
     //const start_date='2022-05-18'
     //const end_date='2022-05-19'
-    const sql = `SELECT stat_code, CONCAT('station',stat_code) as sta_code_t, de, dn, dh, ts7,TO_CHAR(ts7, 'DD-MM-YYYY HH24:MI') as ts7t, status FROM dataset 
+    const sql = `SELECT stat_code, CONCAT('station',stat_code) as sta_code_t, de, dn, dh, ts7,TO_CHAR(ts7, 'YYYY/MM/DD HH24:MI') as ts7t, status FROM dataset 
     WHERE (stat_code='${stat_code}' ) AND ts7 BETWEEN '${start_date}' AND '${end_date} 24:00:00' `;
-
+    // console.log(sql);
     //ORDER BY ts7
 
     //console.log(sql);
