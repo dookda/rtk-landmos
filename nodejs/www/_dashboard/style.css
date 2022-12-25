@@ -1,0 +1,26 @@
+body {
+    box-sizing: 0px;
+    font-family: 'Noto Sans Thai', sans-serif;
+}
+
+#map {
+    height: 50vh;
+}
+
+.chart {
+    position: relative;
+    height: 40vh;
+    overflow: hidden;
+}
+
+.chart-m {
+    padding-top: 0.45rem !important;
+    padding-right: 0.45rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+
+
+.card .card-title {
+    margin-bottom: 0px !important;
+}
