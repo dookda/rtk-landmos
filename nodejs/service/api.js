@@ -206,49 +206,47 @@ let selectLastdata = (station) => {
     //             AND d.stat_code = '${station}'`;
     const sql = `select * from dataset where stat_code = '${station}' order by ts desc limit 2`
     db.query(sql).then((r) => {
-        // console.log(r.rows)
-        if (r.rows.length > 0) {
-            if (r.rows[0].status != r.rows[1].status) {
-                let station = r.rows[0].stat_code;
-                let status_text = r.rows[0].status;
-                let ngurl = 'https://rtk-landmos.com:3000'
-                // let ngurl = 'http;//localhost/3000'
+        // if (r.rows.length > 0) {
+        //     if (r.rows[0].status != r.rows[1].status) {
+        //         let station = r.rows[0].stat_code;
+        //         let status_text = r.rows[0].status;
+        //         let ngurl = 'https://rtk-landmos.com:3000'
 
-                if (status_text == 1) {
-                    console.log("เปิด เหลือง")
-                    var status_txt = "Movement is low (10-20 cm)"
-                    var url = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=3&onoff=1`
-                    axios.get(url).then(x => {
-                        console.log(x.data);
-                    })
-                    axios.get(`${ngurl}/api/alert/${station}/${status_text}`)
-                } else if (status_text == 2) {
-                    console.log("เปิด แดง")
-                    var status_txt = "Movement is medium (20-30 cm)"
-                    var url = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=4&onoff=1`
-                    axios.get(url).then(x => {
-                        console.log(x.data);
-                    })
-                    axios.get(`${ngurl}/api/alert/${station}/${status_text}`)
-                } else if (status_text == 3) {
-                    console.log("เปิด เหลือง / แดง")
-                    var status_txt = "Movement is high (>30 cm)"
-                    var url1 = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=5&onoff=1`
-                    //var url2 = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=4&onoff=1`
-                    axios.get(url1).then(x => {
-                        console.log(x.data);
-                    })
-                    // axios.get(url2).then(x => {
-                    // console.log(x.data);
-                    // })
-                    axios.get(`${ngurl}/api/alert/${station}/${status_text}`)
-                } else {
-                    console.log(`RTKGNSS สถานีที่ ${station} สถานะการเคลื่อนตัวรหัส ${status_text}`);
-                }
-            }
+        //         if (status_text == 1) {
+        //             console.log("เปิด เหลือง")
+        //             var status_txt = "Movement is low (10-20 cm)"
+        //             var url = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=3&onoff=1`
+        //             axios.get(url).then(x => {
+        //                 console.log(x.data);
+        //             })
+        //             axios.get(`${ngurl}/api/alert/${station}/${status_text}`)
+        //         } else if (status_text == 2) {
+        //             console.log("เปิด แดง")
+        //             var status_txt = "Movement is medium (20-30 cm)"
+        //             var url = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=4&onoff=1`
+        //             axios.get(url).then(x => {
+        //                 console.log(x.data);
+        //             })
+        //             axios.get(`${ngurl}/api/alert/${station}/${status_text}`)
+        //         } else if (status_text == 3) {
+        //             console.log("เปิด เหลือง / แดง")
+        //             var status_txt = "Movement is high (>30 cm)"
+        //             var url1 = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=5&onoff=1`
+        //             //var url2 = `http://rtk${station}.dyndns.org/rpidata/setRelay/?cha=4&onoff=1`
+        //             axios.get(url1).then(x => {
+        //                 console.log(x.data);
+        //             })
+        //             // axios.get(url2).then(x => {
+        //             // console.log(x.data);
+        //             // })
+        //             axios.get(`${ngurl}/api/alert/${station}/${status_text}`)
+        //         } else {
+        //             console.log(`RTKGNSS สถานีที่ ${station} สถานะการเคลื่อนตัวรหัส ${status_text}`);
+        //         }
+        //     }
 
 
-        }
+        // }
     });
 }
 
@@ -276,8 +274,6 @@ app.get('/api/status_turnon/:station/:status', (req, res) => {
     }
     res.status(200).json({ data: `RTK${station}${station} turn-on Successfull` })
 })
-
-
 
 
 setInterval(() => {

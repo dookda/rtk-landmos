@@ -1,11 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 12.9
--- Dumped by pg_dump version 15.0
-
--- Started on 2022-11-18 14:02:55 +07
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;

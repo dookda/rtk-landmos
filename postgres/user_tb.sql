@@ -1,9 +1,4 @@
---
--- PostgreSQL database dump
---
 
--- Dumped from database version 12.9
--- Dumped by pg_dump version 15.0
 
 -- Started on 2022-11-18 14:04:13 +07
 
