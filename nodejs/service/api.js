@@ -27,6 +27,33 @@ app.post("/api/selectdata", (req, res) => {
     });
 })
 
+app.post("/api/selectmultidata", (req, res) => {
+    const { stat_code, start_date, end_date } = req.body;
+
+    const sql = `WITH dt(stat_code, sta_code_t, de, dn, dh,ts7, ts7t) as 
+                    (SELECT stat_code, CONCAT('station',stat_code) as sta_code_t,de, dn, dh, ts7,TO_CHAR(ts7, 'YYYY/MM/DD') as ts7t, status
+                    FROM dataset 
+                    WHERE (stat_code='06' OR stat_code='10') AND ts7 BETWEEN '2022-12-01' AND '2022-12-25 24:00:00' 
+                    ORDER BY ts7 )
+                SELECT 
+                    ts7, ts7t,
+                    max(CASE WHEN stat_code='10' THEN de ELSE null end) AS de_st10,
+                    max(CASE WHEN stat_code='10' THEN dn ELSE null end) AS dn_st10,
+                    max(CASE WHEN stat_code='10' THEN dh ELSE null end) AS dh_st10,
+                    max(CASE WHEN stat_code='06' THEN de ELSE null end) AS de_st04,
+                    max(CASE WHEN stat_code='06' THEN dn ELSE null end) AS dn_st04,
+                    max(CASE WHEN stat_code='06' THEN dh ELSE null end) AS dh_st04
+                FROM dt 
+                GROUP BY ts7, ts7t
+                ORDER BY ts7`;
+
+    db.query(sql).then((r) => {
+        res.status(200).json({
+            data: r.rows
+        });
+    });
+})
+
 app.post("/api/getbystation", (req, res) => {
     const { stat_code } = req.body;
     //const stat_code='10'

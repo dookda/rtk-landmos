@@ -27,91 +27,95 @@ var chart_h = echarts.init(dom_h, null, {
     useDirtyRect: false
 });
 
+var option = {
+    legend: {
+        orient: 'horizontal',
+        // right: 100,
+        top: '0',
+        // top: 'center'
+    },
+    tooltip: {
+        trigger: 'axis',
+        formatter: function (params) {
+            console.log(params);
+            params = params[0];
+            var date = new Date(params.name);
+            return (
+                date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' +
+                date.getHours() + ':' + date.getMinutes() + ' น.' +
+                ' = ' +
+                params.value + ' cm.'
+            );
+        },
+        axisPointer: {
+            animation: false
+        }
+    },
+    yAxis: {
+        type: 'value'
+    },
+    grid: {
+        top: '10%',
+        left: '5%',
+        right: '5%',
+        bottom: '25%'
+    },
+    toolbox: {
+        itemSize: 15,
+        right: 50,
+        feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            },
+            restore: {}
+        }
+    },
+    dataZoom: [
+        {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            // start: 40,
+            // end: 60
+        }, {
+            type: 'slider',
+            yAxisIndex: 0,
+            filterMode: 'none'
+        }, {
+            type: 'inside',
+            xAxisIndex: 0,
+            filterMode: 'none'
+        }, {
+            type: 'inside',
+            yAxisIndex: 0,
+            filterMode: 'none'
+        }
+    ],
+};
 
 let showChart = (cat, val, type) => {
-    var option = {
-        legend: {
-            // Try 'horizontal'
-            orient: 'horizontal',
-            // right: 100,
-            top: '0',
-            // top: 'center'
-        },
-        tooltip: {
-            trigger: 'axis',
-            formatter: function (params) {
-                params = params[0];
-                var date = new Date(params.name);
-                return (
-                    date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' +
-                    date.getHours() + ':' + date.getMinutes() + ' น.' +
-                    ' = ' +
-                    params.value + ' cm.'
-                );
-            },
-            axisPointer: {
-                animation: false
-            }
-        },
-        yAxis: {
-            type: 'value'
-        },
-        grid: {
-            top: '10%',
-            left: '5%',
-            right: '5%',
-            bottom: '25%'
-        },
-        toolbox: {
-            itemSize: 15,
-            right: 50,
-            feature: {
-                dataZoom: {
-                    yAxisIndex: 'none'
-                },
-                restore: {}
-            }
-        },
-        dataZoom: [
-            {
-                type: 'slider',
-                xAxisIndex: 0,
-                filterMode: 'none',
-                // start: 40,
-                // end: 60
-            }, {
-                type: 'slider',
-                yAxisIndex: 0,
-                filterMode: 'none'
-            }, {
-                type: 'inside',
-                xAxisIndex: 0,
-                filterMode: 'none'
-            }, {
-                type: 'inside',
-                yAxisIndex: 0,
-                filterMode: 'none'
-            }
-        ],
-    };
-    console.log(type);
+
+    // console.log(type);
     if (type == "de") {
-        option["xAxis"] = { type: 'category', data: cat };
-        option["series"] = [{ data: val, type: 'scatter', name: 'de' }];
+        // option["xAxis"] = { type: 'time', data: cat };
+        option["series"] = val
+        // [{ data: val, type: 'line', name: 'de' }];
         if (option && typeof option === 'object') {
             chart_e.setOption(option);
         }
         window.addEventListener('resize', chart_e.resize);
     } else if (type == "dn") {
-        option["xAxis"] = { type: 'category', data: cat };
-        option["series"] = [{ data: val, type: 'scatter', name: 'dn' }];
+        // option["xAxis"] = { type: 'time', data: cat };
+        option["series"] = val
+        // [{ data: val, type: 'line', name: 'dn' }];
         if (option && typeof option === 'object') {
             chart_n.setOption(option);
         }
         window.addEventListener('resize', chart_n.resize);
     } else if (type == "dh") {
-        option["xAxis"] = { type: 'category', data: cat };
-        option["series"] = [{ data: val, type: 'scatter', name: 'dh' }];
+        // option["xAxis"] = { type: 'time', data: cat };
+        option["series"] = val
+        // [{ data: val, type: 'line', name: 'dh' }];
         if (option && typeof option === 'object') {
             chart_h.setOption(option);
         }
@@ -119,21 +123,51 @@ let showChart = (cat, val, type) => {
     }
 }
 
+let singleSta = (dat) => {
+    let dd = dat.map(i => i.ts7t);
+    let de = dat.map(i => i.de);
+    let dn = dat.map(i => i.dn);
+    let dh = dat.map(i => i.dh);
+
+    showChart(dd, de, "de");
+    showChart(dd, dn, "dn");
+    showChart(dd, dh, "dh");
+}
+
+let multipleSta = (dat) => {
+    let dd = dat.map(i => i.ts7t);
+    let de_st10 = dat.map(i => i.de_st10);
+    let dn_st10 = dat.map(i => i.dn_st10);
+    let dh_st10 = dat.map(i => i.dh_st10);
+
+    let de_st04 = dat.map(i => i.de_st04);
+    let dn_st04 = dat.map(i => i.dn_st04);
+    let dh_st04 = dat.map(i => i.dh_st04);
+
+    let de = [{ data: [], type: 'line', name: 'de_st10' }, { data: de_st04, type: 'line', name: 'de_st04' }];
+    let dn = [{ data: [], type: 'line', name: 'dn_st10' }, { data: dn_st04, type: 'line', name: 'dn_st04' }];
+    let dh = [{ data: [], type: 'line', name: 'dh_st10' }, { data: dh_st04, type: 'line', name: 'dh_st04' }];
+
+    showChart(dd, de, "de");
+    showChart(dd, dn, "dn");
+    showChart(dd, dh, "dh");
+}
+
 let showData = (data) => {
     let table = $('#table').DataTable({
         ajax: {
             type: 'POST',
-            url: '/api/selectdata',
+            url: '/api/selectmultidata',
             data: data,
             dataSrc: 'data',
             cache: true,
         },
         columns: [
-            { data: 'sta_code_t' },
-            { data: 'de' },
-            { data: 'dn' },
-            { data: 'dh' },
-            { data: 'status' },
+            // { data: 'sta_code_t' },
+            { data: 'de_st10' },
+            { data: 'dn_st10' },
+            { data: 'dh_st10' },
+            // { data: 'status' },
             { data: 'ts7t' }
         ],
         "order": [[1, 'asc']],
@@ -161,14 +195,8 @@ let showData = (data) => {
 
     table.on('search.dt', async () => {
         let dat = table.rows({ search: 'applied' }).data();
-        // console.log(dat);
-        let dd = dat.map(i => i.ts7t);
-        let de = dat.map(i => i.de);
-        let dn = dat.map(i => i.dn);
-        let dh = dat.map(i => i.dh);
-        showChart(dd, de, "de");
-        showChart(dd, dn, "dn");
-        showChart(dd, dh, "dh");
+        console.log(dat);
+        // multipleSta(dat)
     })
 }
 
