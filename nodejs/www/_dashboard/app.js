@@ -27,7 +27,7 @@ var chart_h = echarts.init(dom_h, null, {
     useDirtyRect: false
 });
 
-var option = {
+var option2 = {
     legend: {
         orient: 'horizontal',
         // right: 100,
@@ -36,17 +36,16 @@ var option = {
     },
     tooltip: {
         trigger: 'axis',
-        formatter: function (params) {
-            console.log(params);
-            params = params[0];
-            var date = new Date(params.name);
-            return (
-                date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' +
-                date.getHours() + ':' + date.getMinutes() + ' น.' +
-                ' = ' +
-                params.value + ' cm.'
-            );
-        },
+        // formatter: function (params) {
+        //     params = params[0];
+        //     var date = new Date(params.axisValueLabel);
+        //     return (
+        //         date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' +
+        //         date.getHours() + ':' + date.getMinutes() + ' น.' +
+        //         ' = ' +
+        //         params.value + ' cm.'
+        //     );
+        // },
         axisPointer: {
             animation: false
         }
@@ -93,29 +92,73 @@ var option = {
     ],
 };
 
-let showChart = (cat, val, type) => {
 
-    // console.log(type);
+
+var option = {
+    color: ["#009C95", "#21ba45"],
+    title: {
+        text: 'Fuel History',
+        textStyle: {
+            fontFamily: 'lato'
+        }
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    calculable: true,
+    xAxis: [
+        {
+            type: 'time',
+            boundaryGap: false,
+            axisLabel: {
+                formatter: (function (value) {
+                    return moment(value).format('HH:mm');
+                })
+            }
+        }
+    ],
+    yAxis: [
+        {
+            type: 'value'
+        }
+    ],
+
+}
+
+// option["xAxis"] = { type: 'time' };
+let showChart = (cat, val, type) => {
+    option["series"] = [
+        {
+            backgroundColor: '#4D86FF',
+            name: 'Refuelling',
+            type: 'line',
+            smooth: true,
+            itemStyle: { normal: { areaStyle: { type: 'default' } } },
+            data: [["2018-08-15T10:04:01.339Z", 5], ["2018-08-15T10:40:13.914Z", 7]]
+        },
+        {
+            name: 'Fuel Theft',
+            type: 'line',
+            smooth: true,
+            itemStyle: { normal: { areaStyle: { type: 'default' } } },
+            data: [["2018-08-15T10:04:01.339Z", 1], ["2018-08-15T10:14:13.914Z", 2], ["2018-08-15T10:40:03.147Z", 3], ["2018-08-15T11:50:14.335Z", 4]]
+        }
+    ]
+
     if (type == "de") {
-        // option["xAxis"] = { type: 'time', data: cat };
-        option["series"] = val
-        // [{ data: val, type: 'line', name: 'de' }];
+        // option["series"] = [{ data: val, type: 'line', name: 'de' }];
         if (option && typeof option === 'object') {
             chart_e.setOption(option);
         }
         window.addEventListener('resize', chart_e.resize);
     } else if (type == "dn") {
-        // option["xAxis"] = { type: 'time', data: cat };
-        option["series"] = val
-        // [{ data: val, type: 'line', name: 'dn' }];
+        // option["series"] = [{ data: val, type: 'line', name: 'dn' }];
         if (option && typeof option === 'object') {
             chart_n.setOption(option);
         }
         window.addEventListener('resize', chart_n.resize);
     } else if (type == "dh") {
-        // option["xAxis"] = { type: 'time', data: cat };
-        option["series"] = val
-        // [{ data: val, type: 'line', name: 'dh' }];
+        // option["series"] = [{ data: val, type: 'line', name: 'dh' }];
         if (option && typeof option === 'object') {
             chart_h.setOption(option);
         }
@@ -135,22 +178,33 @@ let singleSta = (dat) => {
 }
 
 let multipleSta = (dat) => {
-    let dd = dat.map(i => i.ts7t);
-    let de_st10 = dat.map(i => i.de_st10);
-    let dn_st10 = dat.map(i => i.dn_st10);
-    let dh_st10 = dat.map(i => i.dh_st10);
+    console.log(dat);
+    let dd = dat.map(i => i.ts7);
+    let de_st10 = dat.map(i => [i.ts7, i.de_st10]);
+    let dn_st10 = dat.map(i => [i.ts7, i.dn_st10]);
+    let dh_st10 = dat.map(i => [i.ts7, i.dh_st10]);
 
-    let de_st04 = dat.map(i => i.de_st04);
-    let dn_st04 = dat.map(i => i.dn_st04);
-    let dh_st04 = dat.map(i => i.dh_st04);
+    let de_st04 = dat.map(i => [i.ts7, i.de_st04]);
+    let dn_st04 = dat.map(i => [i.ts7, i.dn_st04]);
+    let dh_st04 = dat.map(i => [i.ts7, i.dh_st04]);
 
-    let de = [{ data: [], type: 'line', name: 'de_st10' }, { data: de_st04, type: 'line', name: 'de_st04' }];
-    let dn = [{ data: [], type: 'line', name: 'dn_st10' }, { data: dn_st04, type: 'line', name: 'dn_st04' }];
-    let dh = [{ data: [], type: 'line', name: 'dh_st10' }, { data: dh_st04, type: 'line', name: 'dh_st04' }];
+    // let de = [{ data: [], type: 'line', name: 'de_st10' }, { data: de_st04, type: 'line', name: 'de_st04' }];
+    // let dn = [{ data: [], type: 'line', name: 'dn_st10' }, { data: dn_st04, type: 'line', name: 'dn_st04' }];
+    // let dh = [{ data: [], type: 'line', name: 'dh_st10' }, { data: dh_st04, type: 'line', name: 'dh_st04' }];
 
-    showChart(dd, de, "de");
-    showChart(dd, dn, "dn");
-    showChart(dd, dh, "dh");
+    showChart(dd, de_st10, "de");
+    showChart(dd, dn_st10, "dn");
+    showChart(dd, dh_st10, "dh");
+}
+
+let formatData = (dat, st_code) => {
+    let stat_code = JSON.parse(st_code)
+
+    stat_code.forEach(e => {
+        dat.filter(i => i.stat_code == "station" + e)
+    });
+
+    // 
 }
 
 let showData = (data) => {
@@ -163,12 +217,12 @@ let showData = (data) => {
             cache: true,
         },
         columns: [
-            // { data: 'sta_code_t' },
-            { data: 'de_st10' },
-            { data: 'dn_st10' },
-            { data: 'dh_st10' },
-            // { data: 'status' },
-            { data: 'ts7t' }
+            { data: 'sta_code_t' },
+            { data: 'de' },
+            { data: 'dn' },
+            { data: 'dh' },
+            { data: 'status' },
+            { data: 'ts7' }
         ],
         "order": [[1, 'asc']],
         "paging": true,
@@ -195,8 +249,9 @@ let showData = (data) => {
 
     table.on('search.dt', async () => {
         let dat = table.rows({ search: 'applied' }).data();
-        console.log(dat);
-        // multipleSta(dat)
+        // console.log(dat);
+        // formatData(dat, data.stat_code)
+        multipleSta(dat)
     })
 }
 
@@ -205,13 +260,15 @@ const getData = () => {
     let start_date = $("#start_date").val();
     let end_date = $("#end_date").val();
     $("#table").dataTable().fnDestroy();
-    showData({ stat_code, start_date, end_date });
+    showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
+    // console.log(stat_code);
 }
 
 const today = moment().format('YYYY-MM-DD')
 const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
-const stat_code = '10';
+
 $("#start_date").val(yesterday);
 $("#end_date").val(today);
 $("#stat_code").val('10');
-showData({ stat_code: stat_code, start_date: yesterday, end_date: today })
+let stat_code = $("#stat_code").val();
+showData({ stat_code: JSON.stringify(stat_code), start_date: yesterday, end_date: today })

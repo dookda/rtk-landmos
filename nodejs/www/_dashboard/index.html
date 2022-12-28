@@ -168,7 +168,7 @@
                   <div class="forms-sample">
                     <div class="form-group">
                       <label for="stat_code">เลือก Station</label>
-                      <select class="form-control" aria-label="station" id="stat_code">
+                      <select class="form-control" aria-label="station" id="stat_code" multiple>
                         <option value="01">01</option>
                         <option value="02">02</option>
                         <option value="03">03</option>
@@ -241,12 +241,12 @@
                         <table id="table" class="display expandable-table" style="width:100%">
                           <thead>
                             <tr>
-                              <!-- <th>sta_code_t</th> -->
+                              <th>sta_code_t</th>
                               <th>de</th>
                               <th>dn</th>
                               <th>dh</th>
-                              <!-- <th>status</th> -->
-                              <th>ts7t</th>
+                              <th>status</th>
+                              <th>ts7</th>
                             </tr>
                           </thead>
                         </table>
@@ -898,7 +898,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/moment@^2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
   <script src="./app.js"></script>
 </body>
 
