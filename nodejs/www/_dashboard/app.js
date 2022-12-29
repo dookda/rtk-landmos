@@ -197,18 +197,39 @@ let multipleSta = (dat) => {
     showChart(dd, dh_st10, "dh");
 }
 
-let formatData = (dat, st_code) => {
+let formatData = async (dat, st_code) => {
     let stat_code = JSON.parse(st_code)
+    console.log(st_code);
 
-    stat_code.forEach(e => {
-        dat.filter(i => i.stat_code == "station" + e)
-    });
+
+    // stat_code.forEach(async (e) => {
+    //     new Promise((resolve, reject) => {
+    //         let a = dat.filter(i => i.stat_code == "station" + e)
+    //     })
+    // });
+
+    // stat_code.map(async (e) => {
+    //     let a = await dat.filter(i => i.stat_code == e)
+    //     console.log(a);
+    // })
+
+
+    // Promise.
+    //     all(stat_code.map(async (i) => {
+    //         let a = await dat.filter(i => i.stat_code == i)
+    //         console.log(a);
+    //     })).
+    //     catch(err => {
+    //         err.message; // Oops!
+    //     });
+
+
 
     // 
 }
-
+var table;
 let showData = (data) => {
-    let table = $('#table').DataTable({
+    table = $('#table').DataTable({
         ajax: {
             type: 'POST',
             url: '/api/selectmultidata',
@@ -249,9 +270,9 @@ let showData = (data) => {
 
     table.on('search.dt', async () => {
         let dat = table.rows({ search: 'applied' }).data();
-        // console.log(dat);
+        console.log(dat);
         // formatData(dat, data.stat_code)
-        multipleSta(dat)
+        // multipleSta(dat)
     })
 }
 
@@ -259,9 +280,10 @@ const getData = () => {
     let stat_code = $("#stat_code").val();
     let start_date = $("#start_date").val();
     let end_date = $("#end_date").val();
+    table.clear().draw();
     $("#table").dataTable().fnDestroy();
     showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
-    // console.log(stat_code);
+    console.log(stat_code);
 }
 
 const today = moment().format('YYYY-MM-DD')
