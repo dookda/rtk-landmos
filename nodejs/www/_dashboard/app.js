@@ -95,7 +95,7 @@ var option2 = {
 
 
 var option = {
-    color: ["#009C95", "#21ba45"],
+    // color: ["#009C95", "#21ba45"],
     title: {
         text: 'Fuel History',
         textStyle: {
@@ -126,24 +126,10 @@ var option = {
 }
 
 // option["xAxis"] = { type: 'time' };
-let showChart = (cat, val, type) => {
-    option["series"] = [
-        {
-            backgroundColor: '#4D86FF',
-            name: 'Refuelling',
-            type: 'line',
-            smooth: true,
-            itemStyle: { normal: { areaStyle: { type: 'default' } } },
-            data: [["2018-08-15T10:04:01.339Z", 5], ["2018-08-15T10:40:13.914Z", 7]]
-        },
-        {
-            name: 'Fuel Theft',
-            type: 'line',
-            smooth: true,
-            itemStyle: { normal: { areaStyle: { type: 'default' } } },
-            data: [["2018-08-15T10:04:01.339Z", 1], ["2018-08-15T10:14:13.914Z", 2], ["2018-08-15T10:40:03.147Z", 3], ["2018-08-15T11:50:14.335Z", 4]]
-        }
-    ]
+let showChart = (series, type) => {
+    option["series"] = series
+
+    console.log(series);
 
     if (type == "de") {
         // option["series"] = [{ data: val, type: 'line', name: 'de' }];
@@ -165,6 +151,7 @@ let showChart = (cat, val, type) => {
         window.addEventListener('resize', chart_h.resize);
     }
 }
+
 
 let singleSta = (dat) => {
     let dd = dat.map(i => i.ts7t);
@@ -199,34 +186,29 @@ let multipleSta = (dat) => {
 
 let formatData = async (dat, st_code) => {
     let stat_code = JSON.parse(st_code)
-    console.log(st_code);
+    let sres = []
+    _.forEach(stat_code, function (st) {
+        let filterArray = _.filter(dat,
+            { 'stat_code': st }
+        );
 
+        let result = _.map(filterArray, i => [i.ts7, i.de]);
 
-    // stat_code.forEach(async (e) => {
-    //     new Promise((resolve, reject) => {
-    //         let a = dat.filter(i => i.stat_code == "station" + e)
-    //     })
-    // });
+        // console.log(result);
+        sres.push({
+            // backgroundColor: '#4D86FF',
+            name: 'Refuelling',
+            type: 'line',
+            smooth: true,
+            // itemStyle: { normal: { areaStyle: { type: 'default' } } },
+            data: result
+        })
+    });
 
-    // stat_code.map(async (e) => {
-    //     let a = await dat.filter(i => i.stat_code == e)
-    //     console.log(a);
-    // })
+    showChart(sres, "de")
 
-
-    // Promise.
-    //     all(stat_code.map(async (i) => {
-    //         let a = await dat.filter(i => i.stat_code == i)
-    //         console.log(a);
-    //     })).
-    //     catch(err => {
-    //         err.message; // Oops!
-    //     });
-
-
-
-    // 
 }
+
 var table;
 let showData = (data) => {
     table = $('#table').DataTable({
@@ -270,8 +252,8 @@ let showData = (data) => {
 
     table.on('search.dt', async () => {
         let dat = table.rows({ search: 'applied' }).data();
-        console.log(dat);
-        // formatData(dat, data.stat_code)
+        // console.log(dat);
+        formatData(dat, data.stat_code)
         // multipleSta(dat)
     })
 }
