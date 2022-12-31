@@ -4,12 +4,12 @@ body {
 }
 
 #map {
-    height: 50vh;
+    height: 500px;
 }
 
 .chart {
     position: relative;
-    height: 40vh;
+    height: 400px;
     overflow: hidden;
 }
 

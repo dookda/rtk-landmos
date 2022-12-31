@@ -93,9 +93,8 @@ var option2 = {
 };
 
 
-
 var option = {
-    // color: ["#009C95", "#21ba45"],
+    color: ["#009C95", "#21ba45"],
     title: {
         text: 'Fuel History',
         textStyle: {
@@ -122,7 +121,37 @@ var option = {
             type: 'value'
         }
     ],
-
+    toolbox: {
+        itemSize: 15,
+        right: 50,
+        feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            },
+            restore: {}
+        }
+    },
+    dataZoom: [
+        {
+            type: 'slider',
+            xAxisIndex: 0,
+            filterMode: 'none',
+            // start: 40,
+            // end: 60
+        }, {
+            type: 'slider',
+            yAxisIndex: 0,
+            filterMode: 'none'
+        }, {
+            type: 'inside',
+            xAxisIndex: 0,
+            filterMode: 'none'
+        }, {
+            type: 'inside',
+            yAxisIndex: 0,
+            filterMode: 'none'
+        }
+    ]
 }
 
 // option["xAxis"] = { type: 'time' };
@@ -132,81 +161,60 @@ let showChart = (series, type) => {
     console.log(series);
 
     if (type == "de") {
-        // option["series"] = [{ data: val, type: 'line', name: 'de' }];
         if (option && typeof option === 'object') {
-            chart_e.setOption(option);
+            chart_e.setOption(option, true);
         }
         window.addEventListener('resize', chart_e.resize);
     } else if (type == "dn") {
-        // option["series"] = [{ data: val, type: 'line', name: 'dn' }];
         if (option && typeof option === 'object') {
-            chart_n.setOption(option);
+            chart_n.setOption(option, true);
         }
         window.addEventListener('resize', chart_n.resize);
     } else if (type == "dh") {
-        // option["series"] = [{ data: val, type: 'line', name: 'dh' }];
         if (option && typeof option === 'object') {
-            chart_h.setOption(option);
+            chart_h.setOption(option, true);
         }
         window.addEventListener('resize', chart_h.resize);
     }
 }
 
-
-let singleSta = (dat) => {
-    let dd = dat.map(i => i.ts7t);
-    let de = dat.map(i => i.de);
-    let dn = dat.map(i => i.dn);
-    let dh = dat.map(i => i.dh);
-
-    showChart(dd, de, "de");
-    showChart(dd, dn, "dn");
-    showChart(dd, dh, "dh");
-}
-
-let multipleSta = (dat) => {
-    console.log(dat);
-    let dd = dat.map(i => i.ts7);
-    let de_st10 = dat.map(i => [i.ts7, i.de_st10]);
-    let dn_st10 = dat.map(i => [i.ts7, i.dn_st10]);
-    let dh_st10 = dat.map(i => [i.ts7, i.dh_st10]);
-
-    let de_st04 = dat.map(i => [i.ts7, i.de_st04]);
-    let dn_st04 = dat.map(i => [i.ts7, i.dn_st04]);
-    let dh_st04 = dat.map(i => [i.ts7, i.dh_st04]);
-
-    // let de = [{ data: [], type: 'line', name: 'de_st10' }, { data: de_st04, type: 'line', name: 'de_st04' }];
-    // let dn = [{ data: [], type: 'line', name: 'dn_st10' }, { data: dn_st04, type: 'line', name: 'dn_st04' }];
-    // let dh = [{ data: [], type: 'line', name: 'dh_st10' }, { data: dh_st04, type: 'line', name: 'dh_st04' }];
-
-    showChart(dd, de_st10, "de");
-    showChart(dd, dn_st10, "dn");
-    showChart(dd, dh_st10, "dh");
-}
-
 let formatData = async (dat, st_code) => {
-    let stat_code = JSON.parse(st_code)
-    let sres = []
+    let stat_code = JSON.parse(st_code);
+    let series_de = [];
+    let series_dn = [];
+    let series_dh = [];
     _.forEach(stat_code, function (st) {
         let filterArray = _.filter(dat,
             { 'stat_code': st }
         );
+        let order = _.orderBy(filterArray, ['ts7'], ['asc'])
+        let result_de = _.map(order, i => [i.ts7, i.de]);
+        let result_dn = _.map(order, i => [i.ts7, i.dn]);
+        let result_dh = _.map(order, i => [i.ts7, i.dh]);
 
-        let result = _.map(filterArray, i => [i.ts7, i.de]);
-
-        // console.log(result);
-        sres.push({
-            // backgroundColor: '#4D86FF',
+        series_de.push({
             name: 'Refuelling',
             type: 'line',
             smooth: true,
-            // itemStyle: { normal: { areaStyle: { type: 'default' } } },
-            data: result
+            data: result_de
+        })
+        series_dn.push({
+            name: 'Refuelling',
+            type: 'line',
+            smooth: true,
+            data: result_dn
+        })
+        series_dh.push({
+            name: 'Refuelling',
+            type: 'line',
+            smooth: true,
+            data: result_dh
         })
     });
 
-    showChart(sres, "de")
-
+    showChart(series_de, "de")
+    showChart(series_dn, "dn")
+    showChart(series_dh, "dh")
 }
 
 var table;
