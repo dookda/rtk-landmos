@@ -57,3 +57,6 @@ content-type: application/json
     "start_date": "2022-11-18", 
     "end_date": "2022-11-19"
 }
+
+###
+GET http://localhost/apiv2/basestation

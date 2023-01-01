@@ -1,12 +1,58 @@
 
-var map = L.map('map').setView([51.505, -0.09], 13);
+
+var map = L.map('map').setView([18.359549715002537, 99.69806926182481], 13);
 const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 })
 
-osm.addTo(map);
+const station = L.featureGroup();
 
+var baseMaps = {
+    "OpenStreetMap": osm.addTo(map),
+    // "Mapbox Streets": streets
+};
+
+var overlayMaps = {
+    "Cities": station.addTo(map)
+};
+
+var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+// get station
+let removeLayer = () => {
+    map.eachLayer(i => {
+        // console.log(i);
+        if (i.options.name == "mk") {
+            map.removeLayer(i)
+        }
+    })
+}
+
+let showStation = (stations) => {
+    removeLayer()
+    var redMarker = L.AwesomeMarkers.icon({
+        icon: 'coffee',
+        markerColor: 'red'
+    });
+    axios.get('/apiv2/basestation').then((r) => {
+        r.data.map(i => {
+            let sta = (i.stat_code).split("rtk");
+            let chk = stations.includes(sta[1]);
+
+            console.log(i.stat_code, chk);
+            if (chk) {
+                L.marker([i.y_coor, i.x_coor], { icon: redMarker, name: 'mk' }).addTo(station);
+            } else {
+                L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(station);
+            }
+
+        });
+    })
+}
+
+
+// chart
 var dom_e = document.getElementById('chart-e');
 var chart_e = echarts.init(dom_e, null, {
     renderer: 'canvas',
@@ -177,7 +223,7 @@ var option = {
 let showChart = (series, type) => {
     option["series"] = series
 
-    console.log(series);
+    // console.log(series);
 
     if (type == "de") {
         if (option && typeof option === 'object') {
@@ -264,6 +310,7 @@ let formatData = async (dat, st_code) => {
     showChart(series_de, "de")
     showChart(series_dn, "dn")
     showChart(series_dh, "dh")
+    showStation(st_code)
 }
 
 var table;
@@ -271,7 +318,7 @@ let showData = (data) => {
     table = $('#table').DataTable({
         ajax: {
             type: 'POST',
-            url: '/api/selectmultidata',
+            url: '/apiv2/selectmultidata',
             data: data,
             dataSrc: 'data',
             cache: true,
@@ -322,7 +369,7 @@ const getData = () => {
     table.clear().draw();
     $("#table").dataTable().fnDestroy();
     showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
-    console.log(stat_code);
+    // console.log(stat_code);
 }
 
 const today = moment().format('YYYY-MM-DD')

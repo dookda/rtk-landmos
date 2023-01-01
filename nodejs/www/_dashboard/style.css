@@ -24,3 +24,7 @@ body {
 .card .card-title {
     margin-bottom: 0px !important;
 }
+
+img.huechange {
+    filter: hue-rotate(120deg);
+}

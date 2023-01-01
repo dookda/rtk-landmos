@@ -18,6 +18,9 @@ app.use(bodyParser.json())
 const api = require('./service/api');
 app.use(api);
 
+const api2 = require('./service/api_v2');
+app.use(api2);
+
 app.use('/', express.static('www'))
 
 // var https_options = {
