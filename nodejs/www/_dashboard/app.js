@@ -94,7 +94,6 @@ var option2 = {
 
 
 var option = {
-    color: ["#009C95", "#21ba45"],
     title: {
         text: 'Fuel History',
         textStyle: {
@@ -105,22 +104,36 @@ var option = {
         trigger: 'axis'
     },
     calculable: true,
-    xAxis: [
-        {
-            type: 'time',
-            boundaryGap: false,
-            axisLabel: {
-                formatter: (function (value) {
-                    return moment(value).format('HH:mm');
-                })
-            }
+    xAxis: {
+        type: 'time',
+        boundaryGap: false,
+        axisLabel: {
+            formatter: (function (value) {
+                return moment(value).format('DD-MM-YYYY HH:mm');
+            })
+        },
+        splitLine: {
+            show: true
         }
-    ],
-    yAxis: [
-        {
-            type: 'value'
+    },
+    yAxis: {
+        type: 'value',
+        axisLabel: {
+            formatter: '{value} cm'
+        },
+        // name: 'การเคลื่อนตัว',
+        nameLocation: 'middle',
+        nameGap: 30,
+        splitLine: {
+            show: true
         }
-    ],
+    },
+    grid: {
+        top: '10%',
+        left: '5%',
+        right: '5%',
+        bottom: '25%'
+    },
     toolbox: {
         itemSize: 15,
         right: 50,
@@ -151,7 +164,13 @@ var option = {
             yAxisIndex: 0,
             filterMode: 'none'
         }
-    ]
+    ],
+    legend: {
+        orient: 'horizontal',
+        // right: 100,
+        top: '0',
+        // top: 'center'
+    },
 }
 
 // option["xAxis"] = { type: 'time' };
@@ -178,35 +197,65 @@ let showChart = (series, type) => {
     }
 }
 
+let color = [
+    '#dd6b66',
+    '#759aa0',
+    '#e69d87',
+    '#8dc1a9',
+    '#ea7e53',
+    '#eedd78',
+    '#73a373',
+    '#73b9bc',
+    '#7289ab',
+    '#91ca8c',
+    '#f49f42',
+    '#37A2DA',
+    '#32C5E9',
+    '#67E0E3',
+    '#9FE6B8',
+    '#FFDB5C',
+    '#ff9f7f',
+    '#fb7293',
+    '#E062AE',
+    '#E690D1',
+    '#e7bcf3',
+    '#9d96f5',
+    '#8378EA',
+    '#96BFFF'
+]
+
 let formatData = async (dat, st_code) => {
     let stat_code = JSON.parse(st_code);
     let series_de = [];
     let series_dn = [];
     let series_dh = [];
-    _.forEach(stat_code, function (st) {
+    _.forEach(stat_code, function (st, i) {
         let filterArray = _.filter(dat,
             { 'stat_code': st }
         );
         let order = _.orderBy(filterArray, ['ts7'], ['asc'])
-        let result_de = _.map(order, i => [i.ts7, i.de]);
-        let result_dn = _.map(order, i => [i.ts7, i.dn]);
-        let result_dh = _.map(order, i => [i.ts7, i.dh]);
+        let result_de = _.map(order, x => [x.ts7, x.de]);
+        let result_dn = _.map(order, x => [x.ts7, x.dn]);
+        let result_dh = _.map(order, x => [x.ts7, x.dh]);
 
         series_de.push({
-            name: 'Refuelling',
+            name: 'Station' + st,
             type: 'line',
+            color: color[i],
             smooth: true,
             data: result_de
         })
         series_dn.push({
-            name: 'Refuelling',
+            name: 'Station' + st,
             type: 'line',
+            color: color[i],
             smooth: true,
             data: result_dn
         })
         series_dh.push({
-            name: 'Refuelling',
+            name: 'Station' + st,
             type: 'line',
+            color: color[i],
             smooth: true,
             data: result_dh
         })
