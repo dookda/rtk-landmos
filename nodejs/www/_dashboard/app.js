@@ -6,10 +6,23 @@ const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 })
 
+const grod = L.tileLayer('https://{s}.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    lyr: 'basemap'
+});
+const ghyb = L.tileLayer('https://{s}.google.com/vt/lyrs=y,m&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    lyr: 'basemap'
+});
+
 const station = L.featureGroup();
 
 var baseMaps = {
-    "OpenStreetMap": osm.addTo(map),
+    "แผนที่ OSM": osm,
+    "แผนที่ถนน": grod,
+    "แผนที่ภาพถ่าย": ghyb.addTo(map)
     // "Mapbox Streets": streets
 };
 
@@ -29,7 +42,24 @@ let removeLayer = () => {
     })
 }
 
-let showStation = (stations) => {
+const getStation = () => {
+    axios.get('/apiv2/basestation').then(r => {
+        console.log(r);
+        r.data.map(i => {
+            document.getElementById("station_list").innerHTML += `<li>
+            <div class="form-check form-check-flat">
+              <label class="form-check-label">
+                <input class="checkbox" type="checkbox">
+                ${i.stat_code}
+              </label>
+            </div>
+            <i class="remove ti-close"></i>
+          </li>`
+        })
+    })
+}
+
+let showMarkerStation = (stations) => {
     removeLayer()
     var redMarker = L.AwesomeMarkers.icon({
         icon: 'coffee',
@@ -46,11 +76,9 @@ let showStation = (stations) => {
             } else {
                 L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(station);
             }
-
         });
     })
 }
-
 
 // chart
 var dom_e = document.getElementById('chart-e');
@@ -58,7 +86,6 @@ var chart_e = echarts.init(dom_e, null, {
     renderer: 'canvas',
     useDirtyRect: false
 });
-
 
 var dom_n = document.getElementById('chart-n');
 var chart_n = echarts.init(dom_n, null, {
@@ -177,7 +204,7 @@ var option = {
     grid: {
         top: '10%',
         left: '5%',
-        right: '5%',
+        right: '8%',
         bottom: '25%'
     },
     toolbox: {
@@ -222,9 +249,7 @@ var option = {
 // option["xAxis"] = { type: 'time' };
 let showChart = (series, type) => {
     option["series"] = series
-
     // console.log(series);
-
     if (type == "de") {
         if (option && typeof option === 'object') {
             chart_e.setOption(option, true);
@@ -310,18 +335,20 @@ let formatData = async (dat, st_code) => {
     showChart(series_de, "de")
     showChart(series_dn, "dn")
     showChart(series_dh, "dh")
-    showStation(st_code)
+
 }
 
-var table;
+// var table;
 let showData = (data) => {
+    showMarkerStation(data.stat_code)
     table = $('#table').DataTable({
         ajax: {
             type: 'POST',
             url: '/apiv2/selectmultidata',
             data: data,
             dataSrc: 'data',
-            cache: true,
+            // cache: true,
+            destroy: true
         },
         columns: [
             { data: 'sta_code_t' },
@@ -356,9 +383,7 @@ let showData = (data) => {
 
     table.on('search.dt', async () => {
         let dat = table.rows({ search: 'applied' }).data();
-        // console.log(dat);
         formatData(dat, data.stat_code)
-        // multipleSta(dat)
     })
 }
 
@@ -366,11 +391,13 @@ const getData = () => {
     let stat_code = $("#stat_code").val();
     let start_date = $("#start_date").val();
     let end_date = $("#end_date").val();
-    table.clear().draw();
+
     $("#table").dataTable().fnDestroy();
     showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
     // console.log(stat_code);
 }
+
+
 
 const today = moment().format('YYYY-MM-DD')
 const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
@@ -379,4 +406,5 @@ $("#start_date").val(yesterday);
 $("#end_date").val(today);
 $("#stat_code").val('10');
 let stat_code = $("#stat_code").val();
-showData({ stat_code: JSON.stringify(stat_code), start_date: yesterday, end_date: today })
+showData({ stat_code: JSON.stringify(stat_code), start_date: yesterday, end_date: today });
+getStation();
