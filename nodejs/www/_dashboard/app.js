@@ -17,7 +17,7 @@ const ghyb = L.tileLayer('https://{s}.google.com/vt/lyrs=y,m&x={x}&y={y}&z={z}',
     lyr: 'basemap'
 });
 
-const station = L.featureGroup();
+// const station = L.layerGroup();
 
 var baseMaps = {
     "แผนที่ OSM": osm,
@@ -27,24 +27,109 @@ var baseMaps = {
 };
 
 var overlayMaps = {
-    "Cities": station.addTo(map)
+    // "Cities": station.addTo(map)
 };
 
 var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
 
+map.pm.addControls({
+    position: 'topleft',
+    drawMarker: false,
+    drawCircle: false,
+    drawCircleMarker: false,
+    drawPolyline: false,
+    drawText: false,
+    editMode: false,
+    dragMode: false,
+    cutPolygon: false,
+    removalMode: false,
+    rotateMode: false,
+});
+
 // get station
 let removeLayer = () => {
     map.eachLayer(i => {
-        // console.log(i);
         if (i.options.name == "mk") {
             map.removeLayer(i)
         }
     })
 }
 
+var markers;
+var redMarker = L.AwesomeMarkers.icon({
+    icon: 'coffee',
+    markerColor: 'red'
+});
+
+let showMarkerByList = (stations) => {
+    removeLayer()
+    markers.map(i => {
+        let sta = (i.stat_code).split("rtk");
+        let chk = stations.includes(sta[1]);
+        if (chk) {
+            L.marker([i.y_coor, i.x_coor], { icon: redMarker, name: 'mk' }).addTo(map);
+        } else {
+            L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(map);
+        }
+    });
+}
+
+let loadMarker = (stations) => {
+    axios.get('/apiv2/basestation').then((r) => {
+        markers = r.data;
+        setTimeout(() => { showMarkerByList(stations) }, 1000)
+    })
+}
+
+let showMarkerByMap = (mks, bnd) => {
+    removeLayer();
+    var polygon = turf.polygon([bnd.geometry.coordinates[0]]);
+    mks.forEach((i) => {
+        var point = turf.point([i.x_coor, i.y_coor]);
+        var ptsWithin = turf.pointsWithinPolygon(point, polygon);
+        if (ptsWithin.features.length > 0) {
+            console.log(i);
+            L.marker([i.y_coor, i.x_coor], { icon: redMarker, name: 'mk' }).addTo(map);
+        } else {
+            L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(map);
+        }
+    });
+}
+
+// Initialize a global variable to store a reference to the previous feature
+var previousFeature;
+
+map.on('click', () => {
+    if (previousFeature) {
+        console.log(previousFeature);
+        map.removeLayer(previousFeature);
+    }
+})
+
+// Add a 'draw:created' event listener to the map
+map.on('pm:create', function (e) {
+    let mks = markers;
+    let bnd = e.layer.toGeoJSON();
+    showMarkerByMap(mks, bnd);
+
+    // Get the layer for the new feature
+    var layer = e.layer;
+
+    // Remove the previous feature if it exists
+    if (previousFeature) {
+        map.removeLayer(previousFeature);
+    }
+
+    // Store a reference to the new feature
+    previousFeature = layer;
+
+    // Add the new feature to the map
+    layer.addTo(map);
+});
+
 const getStation = () => {
     axios.get('/apiv2/basestation').then(r => {
-        console.log(r);
+        // console.log(r);
         r.data.map(i => {
             document.getElementById("station_list").innerHTML += `<li>
             <div class="form-check form-check-flat">
@@ -56,27 +141,6 @@ const getStation = () => {
             <i class="remove ti-close"></i>
           </li>`
         })
-    })
-}
-
-let showMarkerStation = (stations) => {
-    removeLayer()
-    var redMarker = L.AwesomeMarkers.icon({
-        icon: 'coffee',
-        markerColor: 'red'
-    });
-    axios.get('/apiv2/basestation').then((r) => {
-        r.data.map(i => {
-            let sta = (i.stat_code).split("rtk");
-            let chk = stations.includes(sta[1]);
-
-            console.log(i.stat_code, chk);
-            if (chk) {
-                L.marker([i.y_coor, i.x_coor], { icon: redMarker, name: 'mk' }).addTo(station);
-            } else {
-                L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(station);
-            }
-        });
     })
 }
 
@@ -164,7 +228,6 @@ var option2 = {
         }
     ],
 };
-
 
 var option = {
     title: {
@@ -340,7 +403,8 @@ let formatData = async (dat, st_code) => {
 
 // var table;
 let showData = (data) => {
-    showMarkerStation(data.stat_code)
+    console.log(data);
+    loadMarker(data.stat_code)
     table = $('#table').DataTable({
         ajax: {
             type: 'POST',
