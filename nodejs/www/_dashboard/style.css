@@ -29,6 +29,6 @@ img.huechange {
 
 .list-wrapper {
     height: 100%;
-    max-height: 300px !important;
+    max-height: 340px !important;
     overflow: scroll;
 }

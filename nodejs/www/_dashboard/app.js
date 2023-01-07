@@ -1,5 +1,5 @@
 
-var map = L.map('map').setView([18.359549715002537, 99.69806926182481], 13);
+var map = L.map('map').setView([18.359549715002537, 99.69806926182481], 12);
 const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -83,16 +83,20 @@ let loadMarker = (stations) => {
 let showMarkerByMap = (mks, bnd) => {
     removeLayer();
     var polygon = turf.polygon([bnd.geometry.coordinates[0]]);
+    var stat_code = [];
     mks.forEach((i) => {
         var point = turf.point([i.x_coor, i.y_coor]);
         var ptsWithin = turf.pointsWithinPolygon(point, polygon);
         if (ptsWithin.features.length > 0) {
-            console.log(i);
+            $('#st' + i.st_code).prop('checked', true);
+            stat_code.push(i.st_code);
             L.marker([i.y_coor, i.x_coor], { icon: redMarker, name: 'mk' }).addTo(map);
         } else {
+            $('#st' + i.st_code).prop('checked', false);
             L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(map);
         }
     });
+    getData(stat_code);
 }
 
 // Initialize a global variable to store a reference to the previous feature
@@ -100,7 +104,6 @@ var previousFeature;
 
 map.on('click', () => {
     if (previousFeature) {
-        console.log(previousFeature);
         map.removeLayer(previousFeature);
     }
 })
@@ -130,7 +133,14 @@ const getStation = () => {
     return new Promise((resolve, reject) => {
         axios.get('/apiv2/basestation').then(r => {
             r.data.map(i => {
-                document.getElementById("station_list").innerHTML += `<li><input type="checkbox" id="01" name="station" value="${i.st_code}" checked>  ${i.stat_name}</li>`
+                document.getElementById("station_list").innerHTML += `<li > 
+                    <div class="form-check form-check-flat">
+                        <label class="form-check-label">
+                          <input class="checkbox" type="checkbox" id="st${i.st_code}" value="${i.st_code}" >  ${i.stat_name}
+                          <i class="input-helper"></i>
+                        </label>
+                    </div>
+                </li>`
             })
             resolve();
         })
@@ -299,9 +309,10 @@ let formatData = async (dat, st_code) => {
             { 'stat_code': st }
         );
         let order = _.orderBy(filterArray, ['ts7'], ['asc'])
-        let result_de = _.map(order, x => [x.ts7, x.de]);
-        let result_dn = _.map(order, x => [x.ts7, x.dn]);
-        let result_dh = _.map(order, x => [x.ts7, x.dh]);
+        let result_de = _.map(order, x => [moment(x.ts7).subtract(7, 'h').format(), x.de]);
+        // console.log(result_de);
+        let result_dn = _.map(order, x => [moment(x.ts7).subtract(7, 'h').format(), x.dn]);
+        let result_dh = _.map(order, x => [moment(x.ts7).subtract(7, 'h').format(), x.dh]);
 
         series_de.push({
             name: 'Station' + st,
@@ -334,7 +345,7 @@ let formatData = async (dat, st_code) => {
 
 // var table;
 let showData = (data) => {
-    console.log(data);
+    // console.log(data);
     loadMarker(data.stat_code)
     table = $('#table').DataTable({
         ajax: {
@@ -383,51 +394,45 @@ let showData = (data) => {
 }
 
 
-const getData = () => {
+const getData = (arr) => {
     let stat_code = [];
-    // let stat_code = $("#stat_code").val();
-    $(":checkbox:checked").each(function () {
-        stat_code.push($(this).val());
-    });
+    if (arr) {
+        stat_code = arr
+    } else {
+        $(":checkbox:checked").each(function () {
+            stat_code.push($(this).val());
+        });
+    }
+
     let start_date = moment($('#datetimes').data('daterangepicker').startDate).format('YYYY-MM-DD');
     let end_date = moment($('#datetimes').data('daterangepicker').endDate).format('YYYY-MM-DD');
 
     $("#table").dataTable().fnDestroy();
     showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
-    // console.log(stat_code);
+    console.log({ stat_code: JSON.stringify(stat_code), start_date, end_date });
 }
 
+$('#datetimes').daterangepicker({
+    autoApply: true,
+    startDate: moment().subtract(7, 'days'),
+    endDate: moment(),
+    locale: {
+        format: 'DD-MM-YYYY'
+    }
+});
 
 let init = () => {
-    $('#10').prop('checked', true);
-
-    var start = moment().subtract(7, 'days');
-    var end = moment();
-
-
-
-    $('#datetimes').daterangepicker({
-        autoApply: true,
-        // timePicker: true,
-        startDate: start,
-        endDate: end,
-        locale: {
-            format: 'DD-MM-YYYY'
-        }
-    });
-
-    let stat_code = [];
-
-    $(":checkbox:checked").each(function () {
-        console.log($(this).val());
-        stat_code.push($(this).val());
-    });
-
-    let start_date = moment($('#datetimes').data('daterangepicker').startDate).format('YYYY-MM-DD');
-    let end_date = moment($('#datetimes').data('daterangepicker').endDate).format('YYYY-MM-DD');
-    showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
+    getData()
 };
 
 getStation().then(() => {
-    init()
+    init();
+
+    $('input[type="checkbox"]').change(function () {
+        getData()
+    });
+
+    $('#datetimes').on('apply.daterangepicker', function (ev, picker) {
+        getData()
+    });
 });
