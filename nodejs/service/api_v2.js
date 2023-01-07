@@ -25,7 +25,7 @@ app.post("/apiv2/selectmultidata", (req, res) => {
 })
 
 app.get("/apiv2/basestation", (req, res) => {
-    const sql = `SELECT * FROM base_sta`;
+    const sql = `SELECT *, right(stat_code, 2) as st_code FROM base_sta ORDER BY id DESC`;
     db.query(sql).then((r) => {
         res.status(200).json(r.rows);
     });

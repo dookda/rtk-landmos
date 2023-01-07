@@ -127,18 +127,12 @@ map.on('pm:create', function (e) {
 });
 
 const getStation = () => {
-    axios.get('/apiv2/basestation').then(r => {
-        // console.log(r);
-        r.data.map(i => {
-            document.getElementById("station_list").innerHTML += `<li>
-            <div class="form-check form-check-flat">
-              <label class="form-check-label">
-                <input class="checkbox" type="checkbox">
-                ${i.stat_code}
-              </label>
-            </div>
-            <i class="remove ti-close"></i>
-          </li>`
+    return new Promise((resolve, reject) => {
+        axios.get('/apiv2/basestation').then(r => {
+            r.data.map(i => {
+                document.getElementById("station_list").innerHTML += `<li><input type="checkbox" id="01" name="station" value="${i.st_code}" checked>  ${i.stat_name}</li>`
+            })
+            resolve();
         })
     })
 }
@@ -163,71 +157,6 @@ var chart_h = echarts.init(dom_h, null, {
     useDirtyRect: false
 });
 
-var option2 = {
-    legend: {
-        orient: 'horizontal',
-        // right: 100,
-        top: '0',
-        // top: 'center'
-    },
-    tooltip: {
-        trigger: 'axis',
-        // formatter: function (params) {
-        //     params = params[0];
-        //     var date = new Date(params.axisValueLabel);
-        //     return (
-        //         date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' +
-        //         date.getHours() + ':' + date.getMinutes() + ' น.' +
-        //         ' = ' +
-        //         params.value + ' cm.'
-        //     );
-        // },
-        axisPointer: {
-            animation: false
-        }
-    },
-    yAxis: {
-        type: 'value'
-    },
-    grid: {
-        top: '10%',
-        left: '5%',
-        right: '5%',
-        bottom: '25%'
-    },
-    toolbox: {
-        itemSize: 15,
-        right: 50,
-        feature: {
-            dataZoom: {
-                yAxisIndex: 'none'
-            },
-            restore: {}
-        }
-    },
-    dataZoom: [
-        {
-            type: 'slider',
-            xAxisIndex: 0,
-            filterMode: 'none',
-            // start: 40,
-            // end: 60
-        }, {
-            type: 'slider',
-            yAxisIndex: 0,
-            filterMode: 'none'
-        }, {
-            type: 'inside',
-            xAxisIndex: 0,
-            filterMode: 'none'
-        }, {
-            type: 'inside',
-            yAxisIndex: 0,
-            filterMode: 'none'
-        }
-    ],
-};
-
 var option = {
     title: {
         text: 'Fuel History',
@@ -244,7 +173,7 @@ var option = {
         boundaryGap: false,
         axisLabel: {
             formatter: (function (value) {
-                return moment(value).format('DD-MM-YYYY HH:mm');
+                return moment(value).format(' DD-MM-YYYY HH:mm');
             })
         },
         splitLine: {
@@ -265,8 +194,8 @@ var option = {
     },
     grid: {
         top: '10%',
-        left: '5%',
-        right: '8%',
+        left: '8%',
+        right: '4%',
         bottom: '25%'
     },
     toolbox: {
@@ -284,12 +213,15 @@ var option = {
             type: 'slider',
             xAxisIndex: 0,
             filterMode: 'none',
+            top: 325,
+            height: 20
             // start: 40,
             // end: 60
         }, {
             type: 'slider',
             yAxisIndex: 0,
-            filterMode: 'none'
+            filterMode: 'none',
+            width: 20
         }, {
             type: 'inside',
             xAxisIndex: 0,
@@ -303,7 +235,7 @@ var option = {
     legend: {
         orient: 'horizontal',
         // right: 100,
-        top: '0',
+        bottom: '1',
         // top: 'center'
     },
 }
@@ -450,10 +382,15 @@ let showData = (data) => {
     })
 }
 
+
 const getData = () => {
-    let stat_code = $("#stat_code").val();
-    let start_date = $("#start_date").val();
-    let end_date = $("#end_date").val();
+    let stat_code = [];
+    // let stat_code = $("#stat_code").val();
+    $(":checkbox:checked").each(function () {
+        stat_code.push($(this).val());
+    });
+    let start_date = moment($('#datetimes').data('daterangepicker').startDate).format('YYYY-MM-DD');
+    let end_date = moment($('#datetimes').data('daterangepicker').endDate).format('YYYY-MM-DD');
 
     $("#table").dataTable().fnDestroy();
     showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
@@ -461,13 +398,36 @@ const getData = () => {
 }
 
 
+let init = () => {
+    $('#10').prop('checked', true);
 
-const today = moment().format('YYYY-MM-DD')
-const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    var start = moment().subtract(7, 'days');
+    var end = moment();
 
-$("#start_date").val(yesterday);
-$("#end_date").val(today);
-$("#stat_code").val('10');
-let stat_code = $("#stat_code").val();
-showData({ stat_code: JSON.stringify(stat_code), start_date: yesterday, end_date: today });
-getStation();
+
+
+    $('#datetimes').daterangepicker({
+        autoApply: true,
+        // timePicker: true,
+        startDate: start,
+        endDate: end,
+        locale: {
+            format: 'DD-MM-YYYY'
+        }
+    });
+
+    let stat_code = [];
+
+    $(":checkbox:checked").each(function () {
+        console.log($(this).val());
+        stat_code.push($(this).val());
+    });
+
+    let start_date = moment($('#datetimes').data('daterangepicker').startDate).format('YYYY-MM-DD');
+    let end_date = moment($('#datetimes').data('daterangepicker').endDate).format('YYYY-MM-DD');
+    showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
+};
+
+getStation().then(() => {
+    init()
+});
