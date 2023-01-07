@@ -169,7 +169,7 @@ var chart_h = echarts.init(dom_h, null, {
 
 var option = {
     title: {
-        text: 'Fuel History',
+        // text: 'Fuel History',
         textStyle: {
             fontFamily: 'lato'
         }
@@ -421,12 +421,8 @@ $('#datetimes').daterangepicker({
     }
 });
 
-let init = () => {
-    getData()
-};
-
 getStation().then(() => {
-    init();
+    getData(["10"])
 
     $('input[type="checkbox"]').change(function () {
         getData()
