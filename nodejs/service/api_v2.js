@@ -24,7 +24,7 @@ app.post("/apiv2/selectdata", (req, res) => {
 
 app.post("/apiv2/selectmultidata", (req, res) => {
     const { stat_code, start_date, end_date } = req.body;
-    console.log(start_date, end_date);
+    // console.log(start_date, end_date);
     let codes = JSON.parse(stat_code)
     let where = `stat_code='${codes[0]}'`;
     if (stat_code.length > 1) {
