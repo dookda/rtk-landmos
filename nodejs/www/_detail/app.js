@@ -286,9 +286,41 @@ const resetZoomN = () => {
     chartN.resetZoom();
 }
 
-const checkPoints = function (remove) {
+// chart acceleration
+const ctacc = document.getElementById('acc').getContext('2d');
+var timeFormat = 'YYYY/MM/DD HH:mm:ss';
+const chartAcc = new Chart(ctacc, {
+    type: 'line',
+    data: {},
+    options: {
+        animation: false,
+        spanGaps: true,
+        responsive: true,
+        plugins: {
+            legend: legend,
+            // title: {
+            //     display: true,
+            //     text: 'ค่า N Difference (dn)'
+            // },
+            tooltip: true,
+            zoom: zoom
+        },
+        scales: {
+            x: x,
+            y: {
+                title: {
+                    display: true,
+                    text: 'acceleration (cm/min2)'
+                }
+            },
+        }
+    },
+});
 
+const resetZoomAcc = () => {
+    chartAcc.resetZoom();
 }
+
 
 // table area;
 let showData = (data) => {
@@ -331,6 +363,45 @@ let showData = (data) => {
 
     table.on('search.dt', async () => {
         let dat = table.rows({ search: 'applied' }).data();
+        // console.log(dat);
+        let accel_e = [];
+        dat.map((i, indx) => {
+            if (indx > 0) {
+                let a = moment(i.ts7);//now
+                let b = moment(dat[indx - 1].ts7);
+                let delDistance = i.de - dat[indx - 1].de;
+                // console.log(delDistance);
+                let delTime = a.diff(b, 'minutes');
+                let acceleration = (delDistance / delTime);
+                accel_e.push({ x: moment(i.ts7).subtract(7, 'h'), y: acceleration })
+            }
+        });
+
+        let accel_n = [];
+        dat.map((i, indx) => {
+            if (indx > 0) {
+                let a = moment(i.ts7);//now
+                let b = moment(dat[indx - 1].ts7);
+                let delDistance = i.dn - dat[indx - 1].dn;
+                let delTime = a.diff(b, 'minutes');
+                let acceleration = (delDistance / delTime);
+                accel_n.push({ x: moment(i.ts7).subtract(7, 'h'), y: acceleration })
+            }
+        });
+
+        let accel_h = [];
+        dat.map((i, indx) => {
+            if (indx > 0) {
+                let a = moment(i.ts7);//now
+                let b = moment(dat[indx - 1].ts7);
+                let delDistance = i.dh - dat[indx - 1].dh;
+                let delTime = a.diff(b, 'minutes');
+                let acceleration = (delDistance / delTime);
+                accel_h.push({ x: moment(i.ts7).subtract(7, 'h'), y: acceleration })
+            }
+        });
+
+        // console.log(accel_e);
 
         let en0 = []
         dat.filter(i => i.status == 0).map(i => en0.push({ x: i.de, y: i.dn, z: i.status }))
@@ -344,37 +415,37 @@ let showData = (data) => {
         dat.filter(i => i.status == 4).map(i => en4.push({ x: i.de, y: i.dn, z: i.status }))
 
         let h0 = []
-        dat.filter(i => i.status == 0).map(i => h0.push({ x: i.ts7, y: i.dh, z: i.status }))
+        dat.filter(i => i.status == 0).map(i => h0.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dh, z: i.status }))
         let h1 = []
-        dat.filter(i => i.status == 1).map(i => h1.push({ x: i.ts7, y: i.dh, z: i.status }))
+        dat.filter(i => i.status == 1).map(i => h1.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dh, z: i.status }))
         let h2 = []
-        dat.filter(i => i.status == 2).map(i => h2.push({ x: i.ts7, y: i.dh, z: i.status }))
+        dat.filter(i => i.status == 2).map(i => h2.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dh, z: i.status }))
         let h3 = []
-        dat.filter(i => i.status == 3).map(i => h3.push({ x: i.ts7, y: i.dh, z: i.status }))
+        dat.filter(i => i.status == 3).map(i => h3.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dh, z: i.status }))
         let h4 = []
-        dat.filter(i => i.status == 4).map(i => h4.push({ x: i.ts7, y: i.dh, z: i.status }))
+        dat.filter(i => i.status == 4).map(i => h4.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dh, z: i.status }))
 
         let e0 = []
-        dat.filter(i => i.status == 0).map(i => e0.push({ x: i.ts7, y: i.de, z: i.status }))
+        dat.filter(i => i.status == 0).map(i => e0.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.de, z: i.status }))
         let e1 = []
-        dat.filter(i => i.status == 1).map(i => e1.push({ x: i.ts7, y: i.de, z: i.status }))
+        dat.filter(i => i.status == 1).map(i => e1.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.de, z: i.status }))
         let e2 = []
-        dat.filter(i => i.status == 2).map(i => e2.push({ x: i.ts7, y: i.de, z: i.status }))
+        dat.filter(i => i.status == 2).map(i => e2.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.de, z: i.status }))
         let e3 = []
-        dat.filter(i => i.status == 3).map(i => e3.push({ x: i.ts7, y: i.de, z: i.status }))
+        dat.filter(i => i.status == 3).map(i => e3.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.de, z: i.status }))
         let e4 = []
-        dat.filter(i => i.status == 4).map(i => e4.push({ x: i.ts7, y: i.de, z: i.status }))
+        dat.filter(i => i.status == 4).map(i => e4.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.de, z: i.status }))
 
         let n0 = []
-        dat.filter(i => i.status == 0).map(i => n0.push({ x: i.ts7, y: i.dn, z: i.status }))
+        dat.filter(i => i.status == 0).map(i => n0.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dn, z: i.status }))
         let n1 = []
-        dat.filter(i => i.status == 1).map(i => n1.push({ x: i.ts7, y: i.dn, z: i.status }))
+        dat.filter(i => i.status == 1).map(i => n1.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dn, z: i.status }))
         let n2 = []
-        dat.filter(i => i.status == 2).map(i => n2.push({ x: i.ts7, y: i.dn, z: i.status }))
+        dat.filter(i => i.status == 2).map(i => n2.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dn, z: i.status }))
         let n3 = []
-        dat.filter(i => i.status == 3).map(i => n3.push({ x: i.ts7, y: i.dn, z: i.status }))
+        dat.filter(i => i.status == 3).map(i => n3.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dn, z: i.status }))
         let n4 = []
-        dat.filter(i => i.status == 4).map(i => n4.push({ x: i.ts7, y: i.dn, z: i.status }))
+        dat.filter(i => i.status == 4).map(i => n4.push({ x: moment(i.ts7).subtract(7, 'h'), y: i.dn, z: i.status }))
 
 
         chart.data = {
@@ -509,6 +580,30 @@ let showData = (data) => {
         chartN.scales.x.max = new Date(data.end_date).valueOf();
         chartN.update();
         chartN.resetZoom();
+
+        chartAcc.data = {
+            datasets: [{
+                spanGaps: true,
+                backgroundColor: 'red',
+                label: 'ความเร่งทาง e',
+                data: accel_e,
+                showLine: false,
+            }, {
+                backgroundColor: 'yellow',
+                label: "ความเร่งทาง n",
+                data: accel_n,
+                showLine: false,
+            }, {
+                backgroundColor: 'orange',
+                label: "ความเร่งทาง z",
+                data: accel_h,
+                showLine: false,
+            }]
+        };
+        chartAcc.scales.x.min = new Date(data.start_date).valueOf();
+        chartAcc.scales.x.max = new Date(data.end_date).valueOf();
+        chartAcc.update();
+        chartAcc.resetZoom();
     })
 }
 
@@ -542,8 +637,6 @@ $("#st_code").html(st_code)
 $("#st_code2").html(st_code)
 $("#st_code3").html(st_code)
 getData()
-
-
 
 
 
