@@ -408,28 +408,6 @@ var chartDomG4 = document.getElementById('g4');
 var myChartG4 = echarts.init(chartDomG4);
 optionG && myChartG4.setOption(optionG);
 
-// var chartDomG3 = document.getElementById('g3');
-// var myChartG3 = echarts.init(chartDomG3);
-// optionG && myChartG3.setOption(optionG);
-
-// var chartDomG4 = document.getElementById('g4');
-// var myChartG4 = echarts.init(chartDomG4);
-// optionG && myChartG4.setOption(optionG);
-// setInterval(function () {
-//     myChartG.setOption({
-//         series: [
-//             {
-//                 data: [
-//                     {
-//                         value: +(Math.random() * 100).toFixed(2)
-//                     }
-//                 ]
-//             }
-//         ]
-//     });
-// }, 2000);
-
-
 
 // var table;
 let showData = (data) => {
@@ -457,11 +435,6 @@ let showData = (data) => {
         "ordering": true,
         "info": false,
         "filter": true,
-        columnDefs: [{
-            orderable: false,
-            className: 'select-checkbox',
-            targets: 0
-        }],
         select: {
             style: 'os',
             selector: 'td:first-child'
