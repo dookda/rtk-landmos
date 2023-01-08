@@ -55,9 +55,18 @@ let removeLayer = () => {
 }
 
 var markers;
-var redMarker = L.AwesomeMarkers.icon({
-    icon: 'coffee',
-    markerColor: 'red'
+var redMarker = L.ExtraMarkers.icon({
+    icon: 'fa-podcast',
+    markerColor: 'red',
+    shape: 'circle',
+    prefix: 'fa'
+});
+
+var blueMarker = L.ExtraMarkers.icon({
+    icon: 'fa-podcast',
+    markerColor: 'blue',
+    shape: 'circle',
+    prefix: 'fa'
 });
 
 let showMarkerByList = (stations) => {
@@ -68,7 +77,7 @@ let showMarkerByList = (stations) => {
         if (chk) {
             L.marker([i.y_coor, i.x_coor], { icon: redMarker, name: 'mk' }).addTo(map);
         } else {
-            L.marker([i.y_coor, i.x_coor], { name: 'mk' }).addTo(map);
+            L.marker([i.y_coor, i.x_coor], { icon: blueMarker, name: 'mk' }).addTo(map);
         }
     });
 }
