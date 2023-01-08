@@ -113,19 +113,11 @@ map.on('pm:create', function (e) {
     let mks = markers;
     let bnd = e.layer.toGeoJSON();
     showMarkerByMap(mks, bnd);
-
-    // Get the layer for the new feature
     var layer = e.layer;
-
-    // Remove the previous feature if it exists
     if (previousFeature) {
         map.removeLayer(previousFeature);
     }
-
-    // Store a reference to the new feature
     previousFeature = layer;
-
-    // Add the new feature to the map
     layer.addTo(map);
 });
 
@@ -340,8 +332,103 @@ let formatData = async (dat, st_code) => {
     showChart(series_de, "de")
     showChart(series_dn, "dn")
     showChart(series_dh, "dh")
-
 }
+
+// gaage chart
+var optionG = {
+    series: [
+        {
+            type: 'gauge',
+            axisLine: {
+                lineStyle: {
+                    width: 15,
+                    color: [
+                        [0.3, '#67e0e3'],
+                        [0.7, '#37a2da'],
+                        [1, '#fd666d']
+                    ]
+                }
+            },
+            pointer: {
+                itemStyle: {
+                    color: 'inherit'
+                }
+            },
+            axisTick: {
+                distance: -6,
+                length: 8,
+                lineStyle: {
+                    color: '#fff',
+                    width: 1
+                }
+            },
+            splitLine: {
+                distance: -15,
+                length: 10,
+                lineStyle: {
+                    color: '#fff',
+                    width: 2
+                }
+            },
+            axisLabel: {
+                color: 'inherit',
+                distance: 23,
+                fontSize: 10
+            },
+            detail: {
+                valueAnimation: true,
+                formatter: '{value} m/sec',
+                color: 'inherit',
+                fontSize: 18,
+                offsetCenter: [0, '100%']
+            },
+            data: [
+                {
+                    value: (Math.random() * 100).toFixed(1)
+                }
+            ]
+        }
+    ]
+};
+
+var chartDomG = document.getElementById('g1');
+var myChartG = echarts.init(chartDomG);
+optionG && myChartG.setOption(optionG);
+
+var chartDomG2 = document.getElementById('g2');
+var myChartG2 = echarts.init(chartDomG2);
+optionG && myChartG2.setOption(optionG);
+
+var chartDomG3 = document.getElementById('g3');
+var myChartG3 = echarts.init(chartDomG3);
+optionG && myChartG3.setOption(optionG);
+
+var chartDomG4 = document.getElementById('g4');
+var myChartG4 = echarts.init(chartDomG4);
+optionG && myChartG4.setOption(optionG);
+
+// var chartDomG3 = document.getElementById('g3');
+// var myChartG3 = echarts.init(chartDomG3);
+// optionG && myChartG3.setOption(optionG);
+
+// var chartDomG4 = document.getElementById('g4');
+// var myChartG4 = echarts.init(chartDomG4);
+// optionG && myChartG4.setOption(optionG);
+// setInterval(function () {
+//     myChartG.setOption({
+//         series: [
+//             {
+//                 data: [
+//                     {
+//                         value: +(Math.random() * 100).toFixed(2)
+//                     }
+//                 ]
+//             }
+//         ]
+//     });
+// }, 2000);
+
+
 
 // var table;
 let showData = (data) => {
@@ -399,7 +486,7 @@ const getData = (arr) => {
     if (arr) {
         stat_code = arr
     } else {
-        $(":checkbox:checked").each(function () {
+        $(":checkbox:checked").each(function (e) {
             stat_code.push($(this).val());
         });
     }
@@ -409,7 +496,7 @@ const getData = (arr) => {
 
     $("#table").dataTable().fnDestroy();
     showData({ stat_code: JSON.stringify(stat_code), start_date, end_date });
-    console.log({ stat_code: JSON.stringify(stat_code), start_date, end_date });
+    // console.log({ stat_code: JSON.stringify(stat_code), start_date, end_date });
 }
 
 $('#datetimes').daterangepicker({
@@ -422,7 +509,10 @@ $('#datetimes').daterangepicker({
 });
 
 getStation().then(() => {
-    getData(["10"])
+    // init 
+    let st_code = ["10"]
+    getData(st_code)
+    $('#st' + st_code).prop('checked', true);
 
     $('input[type="checkbox"]').change(function () {
         getData()
