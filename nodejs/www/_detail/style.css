@@ -51,3 +51,11 @@ img.huechange {
     color: #000 !important;
     margin-left: auto !important;
 }
+
+.div-head {
+    justify-content: space-between;
+}
+
+#order-chart {
+    height: 300px;
+}

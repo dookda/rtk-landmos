@@ -132,6 +132,7 @@ const getStation = () => {
                           <i class="input-helper"></i>
                         </label>
                     </div>
+                    <a class="detail" href="./../_detail/index.html?st_code=${i.st_code}"><i class=" bi bi-journal-richtext"></i></a>
                 </li>`
             })
             resolve();
