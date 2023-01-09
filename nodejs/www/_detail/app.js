@@ -122,8 +122,8 @@ const chart = new Chart(ctx, {
         },
         scales: {
             x: {
-                min: -300,
-                max: 3000,
+                // min: -300,
+                // max: 3000,
                 title: {
                     display: true,
                     text: 'de (cm)'
@@ -149,8 +149,8 @@ const chart = new Chart(ctx, {
                 }
             },
             y: {
-                min: -300,
-                max: 4500,
+                // min: -300,
+                // max: 4500,
                 title: {
                     display: true,
                     text: 'dn (cm)'
@@ -321,7 +321,6 @@ const resetZoomAcc = () => {
     chartAcc.resetZoom();
 }
 
-
 // table area;
 let showData = (data) => {
     // console.log(data);
@@ -475,6 +474,7 @@ let showData = (data) => {
                 label: "สถานะ 4",
                 data: en4,
                 showLine: false,
+                hidden: true
             }]
         };
         chart.update();
@@ -506,6 +506,7 @@ let showData = (data) => {
                 label: "สถานะ 4",
                 data: h4,
                 showLine: false,
+                hidden: true
             }]
         };
         chartH.scales.x.min = new Date(data.start_date).valueOf();
@@ -540,6 +541,7 @@ let showData = (data) => {
                 label: "สถานะ 4",
                 data: e4,
                 showLine: false,
+                hidden: true
             }]
         };
         chartE.scales.x.min = new Date(data.start_date).valueOf();
@@ -574,6 +576,7 @@ let showData = (data) => {
                 label: "สถานะ 4",
                 data: n4,
                 showLine: false,
+                hidden: true
             }]
         };
         chartN.scales.x.min = new Date(data.start_date).valueOf();
