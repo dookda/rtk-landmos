@@ -585,17 +585,17 @@ let showData = (data) => {
             datasets: [{
                 spanGaps: true,
                 backgroundColor: 'red',
-                label: 'ความเร่งทาง e',
+                label: 'ความเร่ง แกน e',
                 data: accel_e,
                 showLine: false,
             }, {
                 backgroundColor: 'yellow',
-                label: "ความเร่งทาง n",
+                label: "ความเร่ง แกน n",
                 data: accel_n,
                 showLine: false,
             }, {
                 backgroundColor: 'orange',
-                label: "ความเร่งทาง z",
+                label: "ความเร่ง แกน z",
                 data: accel_h,
                 showLine: false,
             }]
