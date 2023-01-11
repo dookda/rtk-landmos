@@ -29,10 +29,11 @@ var overlayMaps = {
     // "Cities": station.addTo(map)
 };
 
-var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+L.control.scale({ metric: true }).addTo(map);
 
 map.pm.addControls({
-    position: 'topleft',
+    position: 'bottomleft',
     drawMarker: false,
     drawCircle: false,
     drawCircleMarker: false,
@@ -68,6 +69,14 @@ var blueMarker = L.ExtraMarkers.icon({
     shape: 'circle',
     prefix: 'fa'
 });
+
+// const blueMarker = L.divIcon({
+//     html: '<i class="fa fa-podcast"></i>',
+//     iconSize: [42, 42],
+//     iconAnchor: [12, 37],
+//     popupAnchor: [5, -30],
+//     className: 'myDivIcon'
+// });
 
 let showMarkerByList = (stations) => {
     removeLayer()
@@ -416,6 +425,14 @@ optionG && myChartG3.setOption(optionG);
 var chartDomG4 = document.getElementById('g4');
 var myChartG4 = echarts.init(chartDomG4);
 optionG && myChartG4.setOption(optionG);
+
+var chartDomG5 = document.getElementById('g5');
+var myChartG5 = echarts.init(chartDomG5);
+optionG && myChartG5.setOption(optionG);
+
+var chartDomG6 = document.getElementById('g6');
+var myChartG6 = echarts.init(chartDomG6);
+optionG && myChartG6.setOption(optionG);
 
 
 // var table;

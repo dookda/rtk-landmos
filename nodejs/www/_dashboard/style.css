@@ -35,7 +35,7 @@ img.huechange {
 
 .card-gauge {
     position: relative;
-    height: 180px;
+    height: 150px;
     overflow: hidden;
     padding: 1px !important;
 }
@@ -50,4 +50,12 @@ img.huechange {
     text-align: center;
     color: #000 !important;
     margin-left: auto !important;
+}
+
+.myDivIcon {
+    text-align: center;
+    /* Horizontally center the text (icon) */
+    line-height: 20px;
+    /* Vertically center the text (icon) */
+    color: aliceblue;
 }
